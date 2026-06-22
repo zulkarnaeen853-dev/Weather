@@ -12,10 +12,12 @@ import temp from "../assets/section 1.png";
 export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitToggle }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Extract variables safely using fallback variables
+  // Extract layers safely into dedicated tracking objects
   const current = apiData?.current || {};
   const location = apiData?.location || {};
   const forecastday = apiData?.forecast?.forecastday || [];
+  
+  // Isolate the primary forecast tracking indices
   const todayForecast = forecastday[0] || {};
   const todayDay = todayForecast.day || {};
   const todayAstro = todayForecast.astro || {};
@@ -38,6 +40,7 @@ export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitT
     }
   };
 
+  // Setup timestamp display conversion metrics
   const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const monthsOfYear = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   
@@ -47,19 +50,24 @@ export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitT
   const dayName = daysOfWeek[localDateObj.getDay()];
   const formattedDate = `${localDateObj.getDate()} ${monthsOfYear[localDateObj.getMonth()]} ${localDateObj.getFullYear()}`;
 
+  // Process the 24-hour horizontal forecast slider row cleanly
   const hourlyDataArray = todayForecast.hour || [];
   
   const mappedHourlyForecast = hourlyDataArray.length >= 20 
     ? hourlyDataArray.slice(13, 20).map((hourItem) => {
-        const timeString = hourItem.time.split(" ")[1]; 
-        let hourNumber = parseInt(timeString.split(":")[0]);
+        // Splits "2023-12-24 13:00" into ["2023-12-24", "13:00"]
+        const dateTimeParts = hourItem.time ? hourItem.time.split(" ") : ["", "12:00"];
+        const clockTime = dateTimeParts[1] || "12:00";
+        
+        // Isolates the numeric hour segment safely
+        let hourNumber = parseInt(clockTime.split(":")[0]) || 12;
         const ampm = hourNumber >= 12 ? "PM" : "AM";
         hourNumber = hourNumber % 12 || 12;
         
         return {
           time: `${hourNumber}${ampm}`,
           temp: !isCelsius ? Math.round(hourItem.temp_f) : Math.round(hourItem.temp_c),
-          icon: hourItem.condition.text.toLowerCase().includes("sun") || hourItem.condition.text.toLowerCase().includes("clear") ? Sun : CloudSun
+          icon: hourItem.condition?.text?.toLowerCase().includes("sun") || hourItem.condition?.text?.toLowerCase().includes("clear") ? Sun : CloudSun
         };
       })
     : [
@@ -72,10 +80,11 @@ export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitT
         { time: "7PM", temp: 15, icon: CloudSun },
       ];
 
+  // Map tomorrow's outlook safely by targeting index 1
   const tomorrowForecast = forecastday[1] || {};
-  const tomorrowDayObj = tomorrowForecast.day;
-  const tomorrowMaxTemp = tomorrowDayObj ? (!isCelsius ? Math.round(tomorrowDayObj.maxtemp_f) : Math.round(tomorrowDayObj.maxtemp_c)) : 14;
-  const tomorrowConditionText = tomorrowDayObj?.condition?.text || "Thunder storm";
+  const tomorrowDayObj = tomorrowForecast.day || {};
+  const tomorrowMaxTemp = !isCelsius ? Math.round(tomorrowDayObj.maxtemp_f || 57) : Math.round(tomorrowDayObj.maxtemp_c || 14);
+  const tomorrowConditionText = tomorrowDayObj.condition?.text || "Thunder storm";
 
   return (
     <div>
@@ -111,7 +120,7 @@ export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitT
           {isDarkMode && (
             <img
               src={temp}
-              alt="Dashboard Card Background Skin Graphics Asset"
+              alt="Dashboard Background"
               className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
             />
           )}
@@ -227,17 +236,19 @@ export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitT
                   Feels Like {!isCelsius ? Math.round((currentFeelsLike * 9) / 5 + 32) : Math.round(currentFeelsLike)}
                 </p>
               </div>
+            </div>
 
-              <div className={`flex-1 rounded-[32px] p-[24px] flex flex-col gap-6 justify-between border transition-all duration-300 ${
+            <div className="flex gap-4 justify-between items-stretch">
+              <div className={`flex-1 rounded-[32px] p-[24px] flex flex-col gap-4 justify-between border transition-all duration-300 ${
                 isDarkMode ? "bg-[#0E1421] border-slate-900/40" : "bg-white border-slate-200 shadow-sm"
               }`}>
-                <h3 className={`text-[16px] font-medium mb-4 transition-colors ${
+                <h3 className={`text-[16px] font-medium transition-colors ${
                   isDarkMode ? "text-white" : "text-[#0E1421]"
                 }`}>
                   Today / Week
                 </h3>
 
-                <div className="flex gap-3 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto pb-1">
                   {mappedHourlyForecast.map((item, idx) => (
                     <div
                       key={idx}
@@ -259,33 +270,33 @@ export const Middle = ({ isDarkMode, apiData, isCelsius, onSearchSubmit, onUnitT
                     </div>
                   ))}
                 </div>
+              </div>
 
-                <div className={`w-full h-[84px] border rounded-[22px] px-6 flex items-center justify-between transition-all duration-300 ${
-                  isDarkMode ? "bg-gradient-to-r from-[#121826] to-[#1C263B] border-slate-800/30" : "bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200 shadow-inner"
-                }`}>
-                  <div className="flex flex-col">
-                    <span className={`text-[13px] font-medium transition-colors ${
-                      isDarkMode ? "text-slate-200" : "text-[#0E1421]"
-                    }`}>
-                      Tomorrow
-                    </span>
-                    <span className={`text-[11px] mt-0.5 transition-colors ${
-                      isDarkMode ? "text-slate-500" : "text-slate-400"
-                    }`}>
-                      {tomorrowConditionText}
-                    </span>
-                  </div>
+              <div className={`w-full h-[84px] border rounded-[22px] px-6 flex items-center justify-between transition-all duration-300 ${
+                isDarkMode ? "bg-gradient-to-r from-[#121826] to-[#1C263B] border-slate-800/30" : "bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200 shadow-inner"
+              }`}>
+                <div className="flex flex-col">
+                  <span className={`text-[13px] font-medium transition-colors ${
+                    isDarkMode ? "text-slate-200" : "text-[#0E1421]"
+                  }`}>
+                    Tomorrow
+                  </span>
+                  <span className={`text-[11px] mt-0.5 transition-colors ${
+                    isDarkMode ? "text-slate-500" : "text-slate-400"
+                  }`}>
+                    {tomorrowConditionText}
+                  </span>
+                </div>
 
-                  <div className="flex items-center gap-4">
-                    <span className={`text-[26px] font-semibold tracking-tight transition-colors ${
-                      isDarkMode ? "text-white" : "text-[#0E1421]"
-                    }`}>
-                      {tomorrowMaxTemp}°
-                    </span>
-                    <Cloud className={`w-9 h-9 transition-colors ${
-                      isDarkMode ? "text-[#5E6575] fill-[#2B303C]" : "text-slate-400 fill-slate-200"
-                    }`}/>
-                  </div>
+                <div className="flex items-center gap-4">
+                  <span className={`text-[26px] font-semibold tracking-tight transition-colors ${
+                    isDarkMode ? "text-white" : "text-[#0E1421]"
+                  }`}>
+                    {tomorrowMaxTemp}°
+                  </span>
+                  <Cloud className={`w-9 h-9 transition-colors ${
+                    isDarkMode ? "text-[#5E6575] fill-[#2B303C]" : "text-slate-400 fill-slate-200"
+                  }`}/>
                 </div>
               </div>
 
