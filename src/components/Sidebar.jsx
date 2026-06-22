@@ -5,8 +5,10 @@ import React from 'react'
 export const Sidebar = ({ isDarkMode, onToggleTheme }) => {
   return (
     <div>
-        <aside
-        className={`w-[88px] h-[calc(100vh-60px)]  absolute left-[30px] top-[30px] pt-6 pb-6 mr-[30px] flex flex-col items-center justify-between rounded-[20px] border shadow-xl z-50 transition-colors duration-300 ${isDarkMode ? "bg-[#0E1421] border-slate-900/40" : "bg-white border-slate-200"}`}
+      <aside
+        className={`w-[88px] h-[calc(100vh-60px)] absolute left-[30px] top-[30px] pt-6 pb-6 mr-[30px] flex flex-col items-center justify-between rounded-[20px] border shadow-xl z-50 transition-colors duration-300 ${
+          isDarkMode ? "bg-[#0E1421] border-slate-900/40" : "bg-white border-slate-200"
+        }`}
       >
         <div className="flex flex-col items-center w-full">
           {/* Logo Brand Branding Header */}
@@ -17,7 +19,9 @@ export const Sidebar = ({ isDarkMode, onToggleTheme }) => {
               className="w-7 h-7 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
             />
             <h2
-              className={`text-[12px] font-medium tracking-tight transition-colors duration-300 ${isDarkMode ? "text-white/90" : "text-[#0E1421]"}`}
+              className={`text-[12px] font-medium tracking-tight transition-colors duration-300 ${
+                isDarkMode ? "text-white/90" : "text-[#0E1421]"
+              }`}
             >
               SkySense
             </h2>
@@ -82,13 +86,17 @@ export const Sidebar = ({ isDarkMode, onToggleTheme }) => {
           {/* Light/Dark Toggle Controller Button */}
           <div
             onClick={onToggleTheme}
-            className={`w-[72px] h-[28px] rounded-full p-[3px] flex items-center shadow-inner border cursor-pointer transition-all duration-300 ${isDarkMode ? "bg-[#000000] border-slate-900/60 justify-end" : "bg-[#E2E8F0] border-slate-300 justify-start"}`}
+            className={`w-[72px] h-[28px] rounded-full p-[3px] flex items-center shadow-inner border cursor-pointer transition-all duration-300 ${
+              isDarkMode ? "bg-[#000000] border-slate-900/60 justify-end" : "bg-[#E2E8F0] border-slate-300 justify-start"
+            }`}
           >
             <div
-              className={`w-[22px] h-[22px] rounded-full flex items-center justify-center shadow-md transition-transform duration-300 ${isDarkMode ? "bg-[#d2d5db]" : "bg-white"}`}
+              className={`w-[22px] h-[22px] rounded-full flex items-center justify-center shadow-md transition-transform duration-300 ${
+                isDarkMode ? "bg-[#d2d5db]" : "bg-white"
+              }`}
             >
               {isDarkMode ? (
-                /* Moon Icon SVG For Dark Mode Viewport */
+                /* Fixed Moon Icon SVG with accurate namespace */
                 <svg
                   xmlns="http://w3.org"
                   viewBox="0 0 24 24"
@@ -102,7 +110,7 @@ export const Sidebar = ({ isDarkMode, onToggleTheme }) => {
                   <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                 </svg>
               ) : (
-                /* Sun Icon SVG For Light Mode Viewport */
+                /* Fixed Sun Icon SVG with accurate namespace */
                 <svg
                   xmlns="http://w3.org"
                   viewBox="0 0 24 24"
