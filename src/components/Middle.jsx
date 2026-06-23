@@ -411,18 +411,18 @@ export const Middle = ({
                   : "bg-white border-slate-200 shadow-sm"
               }`}
             >
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="">
+                <div className="flex items-center gap-5">
                   <span
-                    className={`text-[12px] font-medium tracking-wide transition-colors ${
+                    className={`text-[14px] font-medium tracking-wide transition-colors ${
                       isDarkMode ? "text-slate-500" : "text-slate-400"
                     }`}
                   >
-                    Sunrise
+                    Sunrise:
                   </span>
                   <div className="mt-2 flex items-baseline gap-1">
                     <span
-                      className={`text-[22px] font-semibold transition-colors ${
+                      className={`text-[18px] font-semibold transition-colors ${
                         isDarkMode ? "text-white" : "text-[#0E1421]"
                       }`}
                     >
@@ -438,17 +438,17 @@ export const Middle = ({
                   </div>
                 </div>
 
-                <div>
+                <div className="flex items-center gap-5">
                   <span
-                    className={`text-[12px] font-medium tracking-wide transition-colors ${
+                    className={`text-[14px] font-medium tracking-wide transition-colors  ${
                       isDarkMode ? "text-slate-500" : "text-slate-400"
                     }`}
                   >
-                    Sunset
+                    Sunset:
                   </span>
                   <div className="mt-2 flex items-baseline gap-1">
                     <span
-                      className={`text-[22px] font-semibold transition-colors ${
+                      className={`text-[18px] font-semibold transition-colors ${
                         isDarkMode ? "text-white" : "text-[#0E1421]"
                       }`}
                     >
