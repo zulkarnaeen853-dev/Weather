@@ -15,3 +15,11 @@ The React Compiler is not enabled on this template because of its impact on dev 
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 # Weather
+
+## Setup
+
+1. Copy `.env.example` to `.env.local`.
+2. Replace `YOUR_WEATHERAPI_KEY` with your WeatherAPI API key.
+3. Run `npm install` if needed, then start dev mode with `npm run dev`.
+
+If you do not have a WeatherAPI key yet, sign up at https://www.weatherapi.com/.

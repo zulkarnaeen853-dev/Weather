@@ -21,7 +21,7 @@ export const End = ({ isDarkMode, apiData, isCelsius }) => {
   const rainChanceValue = todayDay.daily_chance_of_rain !== undefined ? `${todayDay.daily_chance_of_rain}%` : "0%";
 
   return (
-    <div className={`w-[800px] h-[calc(100vh-60px)] flex flex-col gap-20 overflow-y-auto pr-2 font-sans transition-colors duration-300 ${
+    <div className={`w-[800px] min-h-0 flex flex-col gap-20 overflow-hidden pr-2 font-sans transition-colors duration-300 ${
       isDarkMode ? "text-white" : "text-[#0E1421]"
     }`}>
       
