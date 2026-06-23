@@ -412,7 +412,7 @@ export const Middle = ({
               }`}
             >
               <div className="">
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-5 mb-2">
                   <span
                     className={`text-[14px] font-medium tracking-wide transition-colors ${
                       isDarkMode ? "text-slate-500" : "text-slate-400"
@@ -420,7 +420,7 @@ export const Middle = ({
                   >
                     Sunrise:
                   </span>
-                  <div className="mt-2 flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1">
                     <span
                       className={`text-[18px] font-semibold transition-colors ${
                         isDarkMode ? "text-white" : "text-[#0E1421]"
@@ -438,7 +438,7 @@ export const Middle = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-5 mb-2">
                   <span
                     className={`text-[14px] font-medium tracking-wide transition-colors  ${
                       isDarkMode ? "text-slate-500" : "text-slate-400"
@@ -446,7 +446,7 @@ export const Middle = ({
                   >
                     Sunset:
                   </span>
-                  <div className="mt-2 flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1">
                     <span
                       className={`text-[18px] font-semibold transition-colors ${
                         isDarkMode ? "text-white" : "text-[#0E1421]"
@@ -471,7 +471,7 @@ export const Middle = ({
                 }`}
               >
                 <span
-                  className={`text-[12px] font-medium tracking-wide transition-colors ${
+                  className={`text-[14px] font-medium tracking-wide transition-colors ${
                     isDarkMode ? "text-slate-500" : "text-slate-400"
                   }`}
                 >
