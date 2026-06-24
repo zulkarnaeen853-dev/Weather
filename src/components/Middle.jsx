@@ -74,18 +74,35 @@ export const Middle = ({
     "Dec",
   ];
 
+  // ==================== FIX: DEFINED THE MISSING VARIABLES HERE ====================
+  const hourlyDataArray = todayForecast.hour || [];
+
+  // Parse local time from string or fallback to system time safely
+  const currentHourIndex = location.localtime && location.localtime.includes(" ")
+    ? parseInt(location.localtime.split(" ")[1].split(":")[0]) || 0
+    : new Date().getHours();
+
+  const localDateObj = location.localtime 
+    ? new Date(location.localtime.replace(" ", "T")) 
+    : new Date();
+  // =================================================================================
+
+  const dayName = daysOfWeek[localDateObj.getDay()];
+  const formattedDate = `${localDateObj.getDate()} ${monthsOfYear[localDateObj.getMonth()]} ${localDateObj.getFullYear()}`;
+
+  // Prevents array slice overflow errors if searching late-night timezones
+  const safeStartIndex = Math.min(currentHourIndex, 17);
+
   const mappedHourlyForecast =
-    hourlyDataArray.length > currentHourIndex
+    hourlyDataArray.length >= 7
       ? hourlyDataArray
-          .slice(currentHourIndex, currentHourIndex + 7)
+          .slice(safeStartIndex, safeStartIndex + 7)
           .map((hourItem) => {
-            // Splits "2023-12-24 13:00" into ["2023-12-24", "13:00"]
             const dateTimeParts = hourItem.time
               ? hourItem.time.split(" ")
               : ["", "12:00"];
             const clockTime = dateTimeParts[1] || "12:00";
 
-            // Isolates the numeric hour segment safely
             let hourNumber = parseInt(clockTime.split(":")[0]) || 12;
             const ampm = hourNumber >= 12 ? "PM" : "AM";
             hourNumber = hourNumber % 12 || 12;
@@ -93,8 +110,8 @@ export const Middle = ({
             return {
               time: `${hourNumber}${ampm}`,
               temp: !isCelsius
-                ? Math.round(hourItem.temp_f)
-                : Math.round(hourItem.temp_c),
+                ? Math.round(hourItem.temp_f ?? (hourItem.temp_c * 9) / 5 + 32)
+                : Math.round(hourItem.temp_c ?? 0),
               iconUrl: hourItem.condition?.icon || "",
             };
           })
