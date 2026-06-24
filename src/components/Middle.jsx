@@ -74,18 +74,6 @@ export const Middle = ({
     "Dec",
   ];
 
-  const localTimeEpoch = location.localtime_epoch;
-  const localDateObj = localTimeEpoch
-    ? new Date(localTimeEpoch * 1000)
-    : new Date();
-  const currentHourIndex = localDateObj.getHours();
-
-  const dayName = daysOfWeek[localDateObj.getDay()];
-  const formattedDate = `${localDateObj.getDate()} ${monthsOfYear[localDateObj.getMonth()]} ${localDateObj.getFullYear()}`;
-
-  // Process the 24-hour horizontal forecast slider row - DYNAMIC based on current hour
-  const hourlyDataArray = todayForecast.hour || [];
-
   const mappedHourlyForecast =
     hourlyDataArray.length > currentHourIndex
       ? hourlyDataArray
@@ -382,9 +370,11 @@ export const Middle = ({
                   </span>
                 </div>
 
-                <div className={`w-18 h-18 rounded-[24px] flex items-center justify-center ${
-                  isDarkMode ? "bg-[#0E172B]" : "bg-slate-100"
-                }`}>
+                <div
+                  className={`w-18 h-18 rounded-[24px] flex items-center justify-center ${
+                    isDarkMode ? "bg-[#0E172B]" : "bg-slate-100"
+                  }`}
+                >
                   {tomorrowIconUrl ? (
                     <img
                       src={tomorrowIconUrl}
