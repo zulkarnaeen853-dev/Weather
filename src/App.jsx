@@ -44,7 +44,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Dynamic application state variables
   const [searchCity, setSearchCity] = useState("Dhaka");
   const [isCelsius, setIsCelsius] = useState(true);
 
@@ -63,41 +62,48 @@ function App() {
     };
 
     const hourly = weather.hourly || {};
+    const daily = weather.daily || {};
     const currentTempC = weather.current_weather?.temperature ?? 0;
-    const currentHumidity = (hourly.relativehumidity_2m && hourly.relativehumidity_2m[0]) ?? 0;
-    const currentUv = (weather.daily?.uv_index_max && weather.daily.uv_index_max[0]) ?? 0;
+    const currentHumidity = hourly.relativehumidity_2m?.[0] ?? 0;
+    const currentUv = daily.uv_index_max?.[0] ?? 0;
+    
+    // Fixed: Handles Open-Meteo windspeed formatting safely
     const currentWindKph = weather.current_weather?.windspeed
-      ? Math.round(weather.current_weather.windspeed * 3.6)
+      ? Math.round(weather.current_weather.windspeed)
       : 0;
     const currentCode = weather.current_weather?.weathercode ?? 0;
 
-    const forecastday = (weather.daily?.time || []).slice(0, 2).map((date, idx) => ({
+    const forecastday = (daily.time || []).slice(0, 2).map((date, idx) => ({
       date,
       date_epoch: Math.floor(new Date(date).getTime() / 1000),
       day: {
-        maxtemp_c: weather.daily.temperature_2m_max?.[idx] ?? 0,
-        mintemp_c: weather.daily.temperature_2m_min?.[idx] ?? 0,
-        maxtemp_f: cToF(weather.daily.temperature_2m_max?.[idx] ?? 0),
-        mintemp_f: cToF(weather.daily.temperature_2m_min?.[idx] ?? 0),
-        daily_chance_of_rain: weather.daily.precipitation_probability_max?.[idx] ?? 0,
+        maxtemp_c: daily.temperature_2m_max?.[idx] ?? 0,
+        mintemp_c: daily.temperature_2m_min?.[idx] ?? 0,
+        maxtemp_f: cToF(daily.temperature_2m_max?.[idx] ?? 0),
+        mintemp_f: cToF(daily.temperature_2m_min?.[idx] ?? 0),
+        daily_chance_of_rain: daily.precipitation_probability_max?.[idx] ?? 0,
         condition: {
-          text: getWeatherText(weather.daily.weathercode?.[idx] ?? 0),
+          text: getWeatherText(daily.weathercode?.[idx] ?? 0),
           icon: "",
         },
       },
       astro: {
-        sunrise: weather.daily.sunrise?.[idx] || "",
-        sunset: weather.daily.sunset?.[idx] || "",
+        sunrise: daily.sunrise?.[idx] ? daily.sunrise[idx].split("T")[1] : "",
+        sunset: daily.sunset?.[idx] ? daily.sunset[idx].split("T")[1] : "",
       },
-      hour: (hourly.time || []).map((time, hourIdx) => ({
-        time,
-        temp_c: hourly.temperature_2m?.[hourIdx] ?? 0,
-        temp_f: cToF(hourly.temperature_2m?.[hourIdx] ?? 0),
-        condition: {
-          text: getWeatherText(hourly.weathercode?.[hourIdx] ?? 0),
-          icon: "",
-        },
-      })),
+      // Safely chunking hourly array allocations down to single daily buckets
+      hour: (hourly.time || []).slice(idx * 24, (idx + 1) * 24).map((time, hourIdx) => {
+        const globalIdx = idx * 24 + hourIdx;
+        return {
+          time: time.replace("T", " "),
+          temp_c: hourly.temperature_2m?.[globalIdx] ?? 0,
+          temp_f: cToF(hourly.temperature_2m?.[globalIdx] ?? 0),
+          condition: {
+            text: getWeatherText(hourly.weathercode?.[globalIdx] ?? 0),
+            icon: "",
+          },
+        };
+      }),
     }));
 
     return {
@@ -164,16 +170,17 @@ function App() {
           throw new Error("City not found. Please verify spelling.");
         }
 
+        // Fixed query string parameters to match Open-Meteo structural mapping arrays
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current_weather=true&hourly=temperature_2m,apparent_temperature,relativehumidity_2m,precipitation_probability,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=2`
+          `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current_weather=true&hourly=temperature_2m,apparent_temperature,relativehumidity_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=2`
         );
 
         if (!weatherResponse.ok) {
           throw new Error("Unable to fetch weather data from Open-Meteo.");
         }
 
-        const weatherData = await weatherResponse.json();
-        setWeatherData(mapOpenMeteoResponse(place, weatherData));
+        const openMeteoData = await weatherResponse.json();
+        setWeatherData(mapOpenMeteoResponse(place, openMeteoData));
       } catch (error) {
         console.error("Error connecting to Weather API:", error);
         setError(error.message);
